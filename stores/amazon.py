@@ -94,22 +94,22 @@ amazon_config = {}
 
 class Amazon:
     def __init__(
-        self,
-        notification_handler,
-        headless=False,
-        checkshipping=False,
-        detailed=False,
-        used=False,
-        single_shot=False,
-        no_screenshots=False,
-        disable_presence=False,
-        slow_mode=False,
-        no_image=False,
-        encryption_pass=None,
-        log_stock_check=False,
-        shipping_bypass=False,
-        alt_offers=False,
-        wait_on_captcha_fail=False,
+            self,
+            notification_handler,
+            headless=False,
+            checkshipping=False,
+            detailed=False,
+            used=False,
+            single_shot=False,
+            no_screenshots=False,
+            disable_presence=False,
+            slow_mode=False,
+            no_image=False,
+            encryption_pass=None,
+            log_stock_check=False,
+            shipping_bypass=True,
+            alt_offers=False,
+            wait_on_captcha_fail=False,
     ):
         self.notification_handler = notification_handler
         self.asin_list = []
@@ -180,7 +180,7 @@ class Amazon:
                     )
                     for x in range(self.asin_groups):
                         if float(config[f"reserve_min_{x + 1}"]) > float(
-                            config[f"reserve_max_{x + 1}"]
+                                config[f"reserve_max_{x + 1}"]
                         ):
                             log.error("Minimum price must be <= maximum price")
                             log.error(
@@ -278,9 +278,9 @@ class Amazon:
                     pass
                 # if successful after running navigate pages, remove the asin_list from the list
                 if (
-                    not self.try_to_checkout
-                    and not self.single_shot
-                    and self.great_success
+                        not self.try_to_checkout
+                        and not self.single_shot
+                        and self.great_success
                 ):
                     self.remove_asin_list(asin)
                 # checkout loop limiters
@@ -535,8 +535,8 @@ class Amazon:
                         "//div[@id='aod-pinned-offer' or @id='aod-offer']//input[@name='submit.addToCart']"
                     )
                 elif (
-                    offer_container.get_attribute("data-action")
-                    == "show-all-offers-display"
+                        offer_container.get_attribute("data-action")
+                        == "show-all-offers-display"
                 ):
                     # PDP Page
                     # Find the offers link first, just to burn some cycles in case the flyout is loading
@@ -601,8 +601,8 @@ class Amazon:
                     else:
                         log.error("Could not open offers link")
                 elif (
-                    offer_container.get_attribute("aria-labelledby")
-                    == "submit.add-to-cart-announce"
+                        offer_container.get_attribute("aria-labelledby")
+                        == "submit.add-to-cart-announce"
                 ):
                     # Use the Buy Box as an Offer as a last resort since it is not guaranteed to be a good offer
                     buy_box = True
@@ -751,11 +751,11 @@ class Amazon:
                 ship_float = 0
 
             if (
-                (ship_float + price_float) <= reserve_max
-                or math.isclose((price_float + ship_float), reserve_max, abs_tol=0.01)
+                    (ship_float + price_float) <= reserve_max
+                    or math.isclose((price_float + ship_float), reserve_max, abs_tol=0.01)
             ) and (
-                (ship_float + price_float) >= reserve_min
-                or math.isclose((price_float + ship_float), reserve_min, abs_tol=0.01)
+                    (ship_float + price_float) >= reserve_min
+                    or math.isclose((price_float + ship_float), reserve_min, abs_tol=0.01)
             ):
                 log.info(
                     f"Item {asin} in stock and in reserve range: {price_float} + {ship_float} shipping <= {reserve_max}"
@@ -769,7 +769,7 @@ class Amazon:
                     log.info("Attempting Add To Cart with offer ID...")
                     offering_id = offering_id_elements[0].get_attribute("value")
                     if self.attempt_atc(
-                        offering_id, max_atc_retries=DEFAULT_MAX_ATC_TRIES
+                            offering_id, max_atc_retries=DEFAULT_MAX_ATC_TRIES
                     ):
                         return True
                     else:
@@ -807,8 +807,8 @@ class Amazon:
                     )
 
                     if (
-                        not emtpy_cart_elements
-                        and self.driver.title in amazon_config["SHOPPING_CART_TITLES"]
+                            not emtpy_cart_elements
+                            and self.driver.title in amazon_config["SHOPPING_CART_TITLES"]
                     ):
                         return True
                     else:
@@ -870,7 +870,7 @@ class Amazon:
                     log.error("No continue button found")
             if continue_btn:
                 if self.do_button_click(
-                    button=continue_btn, fail_text="Could not click continue button"
+                        button=continue_btn, fail_text="Could not click continue button"
                 ):
                     if self.get_cart_count() != 0:
                         return True
@@ -989,10 +989,10 @@ class Amazon:
                 pass
             if element:
                 if self.do_button_click(
-                    button=element,
-                    clicking_text="FairGame thinks it is seeing a Prime Offer, attempting to click No Thanks",
-                    fail_text="FairGame could not click No Thanks button",
-                    log_debug=True,
+                        button=element,
+                        clicking_text="FairGame thinks it is seeing a Prime Offer, attempting to click No Thanks",
+                        fail_text="FairGame could not click No Thanks button",
+                        log_debug=True,
                 ):
                     return
             # see if a use this address (or similar) button is on page (based on known xpaths). Only check if
@@ -1063,10 +1063,10 @@ class Amazon:
                     break
             if button:
                 if self.do_button_click(
-                    button=button,
-                    clicking_text="Found ptc button, attempting to click.",
-                    clicked_text="Clicked ptc button",
-                    fail_text="Could not click button",
+                        button=button,
+                        clicking_text="Found ptc button, attempting to click.",
+                        clicked_text="Clicked ptc button",
+                        fail_text="Could not click button",
                 ):
                     return
                 else:
@@ -1115,7 +1115,7 @@ class Amazon:
                 take_screenshot=self.take_screenshots,
             )
             if self.do_button_click(
-                button=element, fail_text="Could not click ship to address button"
+                    button=element, fail_text="Could not click ship to address button"
             ):
                 return True
 
@@ -1170,9 +1170,9 @@ class Amazon:
             )
         if button:
             if self.do_button_click(
-                button=button,
-                clicking_text="Attempting to click No Thanks button on Prime Signup Page",
-                fail_text="Failed to click No Thanks button on Prime Signup Page",
+                    button=button,
+                    clicking_text="Attempting to click No Thanks button on Prime Signup Page",
+                    fail_text="Failed to click No Thanks button on Prime Signup Page",
             ):
                 return
 
@@ -1192,12 +1192,12 @@ class Amazon:
             time.sleep(0.5)
 
     def do_button_click(
-        self,
-        button,
-        clicking_text="Clicking button",
-        clicked_text="Button clicked",
-        fail_text="Could not click button",
-        log_debug=False,
+            self,
+            button,
+            clicking_text="Clicking button",
+            clicked_text="Button clicked",
+            fail_text="Could not click button",
+            log_debug=False,
     ):
         try:
             with self.wait_for_page_content_change():
@@ -1316,7 +1316,40 @@ class Amazon:
                 self.checkout_retry += 1
 
     @debug
+    def click_on(self, func, val):
+        button = []
+        while len(button) <= 0:
+            try:
+                time.sleep(0.2)
+                button = func(val)
+                button = func(val)
+                print(button)
+                if type(button) != list:
+                    break
+                if len(button) >= 1:
+                    button = button[0]
+                    break
+            except Exception as e:
+                pass
+        # button = self.driver.find_element_by_xpath('//input[@class="a-button-text"]', )
+        log.info("Shipment page -> continue" + str(button))
+        if button:
+            if button.is_enabled() and button.is_displayed():
+                button.click()
+
+    @debug
+    def handle_checkout_extra_steps(self, test):
+        # chipping payment
+        self.click_on(self.driver.find_elements_by_class_name, 'a-button-text')
+        self.click_on(self.driver.find_element_by_xpath,
+                      '//input[@name="ppw-widgetEvent:SetPaymentPlanSelectContinueEvent"]')
+
+    @debug
     def handle_checkout(self, test):
+        # continue for shipment time
+        self.handle_checkout_extra_steps(test)
+        time.sleep(0.5)
+        # continue for card option
         previous_title = self.driver.title
         button = None
         timeout = self.get_timeout()
@@ -1404,7 +1437,7 @@ class Amazon:
         current_page = self.driver.title
         try:
             if not check_presence or self.driver.find_element_by_xpath(
-                '//form[contains(@action,"validateCaptcha")]'
+                    '//form[contains(@action,"validateCaptcha")]'
             ):
                 try:
                     log.info("Stuck on a captcha... Lets try to solve it.")
@@ -1427,15 +1460,15 @@ class Amazon:
                             with self.wait_for_page_content_change():
                                 timeout = self.get_timeout(timeout=60)
                                 while (
-                                    time.time() < timeout
-                                    and self.driver.title == current_page
+                                        time.time() < timeout
+                                        and self.driver.title == current_page
                                 ):
                                     time.sleep(0.5)
                                 # check above is not true, then we must have passed captcha, return back to nav handler
                                 # Otherwise refresh page to try again - either way, returning to nav page handler
                                 if (
-                                    time.time() > timeout
-                                    and self.driver.title == current_page
+                                        time.time() > timeout
+                                        and self.driver.title == current_page
                                 ):
                                     log.info(
                                         "User intervention did not occur in time - will attempt to refresh page and try again"
@@ -1546,7 +1579,7 @@ class Amazon:
     def wait_for_page_change(self, page_title, timeout=3):
         time_to_end = self.get_timeout(timeout=timeout)
         while time.time() < time_to_end and (
-            self.driver.title == page_title or not self.driver.title
+                self.driver.title == page_title or not self.driver.title
         ):
             pass
         if self.driver.title != page_title:
@@ -1760,8 +1793,8 @@ def get_shipping_costs(tree, free_shipping_string):
         if shipping_node.text:
             shipping_span_text = shipping_node.text.strip()
             if any(
-                shipping_span_text.upper() in free_message
-                for free_message in amazon_config["FREE_SHIPPING"]
+                    shipping_span_text.upper() in free_message
+                    for free_message in amazon_config["FREE_SHIPPING"]
             ):
                 # We found some version of "free" inside the span.. but this relies on a match
                 log.debug(
@@ -1870,8 +1903,8 @@ def get_alt_shipping_costs(tree, free_shipping_string) -> Price:
             if "FREE" in shipping_is[0].attrib["aria-label"].upper():
                 log.debug("Found Free shipping with Prime")
         elif any(
-            shipping_span_text.upper() in free_message
-            for free_message in amazon_config["FREE_SHIPPING"]
+                shipping_span_text.upper() in free_message
+                for free_message in amazon_config["FREE_SHIPPING"]
         ):
             # We found some version of "free" inside the span.. but this relies on a match
             log.warning(
